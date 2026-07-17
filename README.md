@@ -11,18 +11,18 @@ An STM32 HAL driver for the **LSM6DS3TR-C** IMU (accelerometer + gyroscope), usi
 Drop `IMU.h` and `IMU.c` into your STM32CubeIDE project like this:
 
 ```
-Project Folder
-  |__Inc
-  |     |__ main.h
-  |     |__ stm32h5xx_hal_conf.h
-  |     |__ stm32h5xx_t.h
-  |     |__ IMU.h            <-- put it here
+📁Project Folder
+  |__📂Inc
+  |     |__ 📄main.h
+  |     |__ 📄stm32h5xx_hal_conf.h
+  |     |__ 📄stm32h5xx_t.h
+  |     |__ 📄IMU.h            <-- put it here
   |
-  |__Src
-        |__ main.c
-        |__ stm32h5xx_hal_msp.c
-        |__ stm32h5xx_it.c
-        |__ IMU.c            <-- put it here
+  |__📂Src
+        |__ 📄main.c
+        |__ 📄stm32h5xx_hal_msp.c
+        |__ 📄stm32h5xx_it.c
+        |__ 📄IMU.c            <-- put it here
 ```
 
 Then `#include "IMU.h"` in your `main.c`.
@@ -69,7 +69,7 @@ Before calling `IMU_INIT`, go into `IMU.c` and set up `IMU_CONF()` with your des
 
 ![CTRL1_XL register config example](https://github.com/IvanAlejo04/lsm6ds3tr-c-stm32-driver/blob/6bff6a783e63ea871fa88e81ac95be8cf9295c43/carbon%20(5).png?raw=true)
 
-> ⚠️ **Bit-order gotcha:** the comments above each register (e.g. `| ODR_XL3 | ODR_XL2 | ... | BW0_XL |`) list bits in **MSB → LSB** order to match the datasheet table. But when writing the **raw `.reg` value** directly (the commented-out `config->CTRL1_XL.reg = 0b...` line), keep in mind that STM32CubeIDE's compiler packs struct bit fields **LSB-first** — the *first* field you declare in the struct is *not* guaranteed to land on the *leftmost* bit of the byte the way the datasheet comment visually suggests. If you always set fields individually by name (as shown above), this doesn't matter — the driver handles the mapping correctly either way. It only bites you if you try to hand-write the raw `0b...` byte yourself and assume it reads left-to-right like the datasheet table.
+> ⚠️ **Bit-order:** the comments above each register (e.g. `| ODR_XL3 | ODR_XL2 | ... | BW0_XL |`) list bits in **MSB → LSB** order to match the datasheet table. But when writing the **raw `.reg` value** directly (the commented-out `config->CTRL1_XL.reg = 0b...` line), keep in mind that STM32CubeIDE's compiler packs struct bit fields **LSB-first** — the *first* field you declare in the struct is *not* guaranteed to land on the *leftmost* bit of the byte the way the datasheet comment visually suggests. If you always set fields individually by name (as shown above), this doesn't matter — the driver handles the mapping correctly either way. It only bites you if you try to hand-write the raw `0b...` byte yourself and assume it reads left-to-right like the datasheet table.
 
 Do this for all 10 control registers (`CTRL1_XL` through `CTRL10_C`) before moving on.
 
