@@ -133,3 +133,20 @@ Read these global variables anywhere in your code once the loop is running:
 - [ ] `IMU_CONF()` edited with your desired register settings
 - [ ] `IMU_CONF()` + `IMU_INIT()` called once before the loop
 - [ ] `IMU_READ()` called every loop iteration
+
+## DEBUG!!! ( if one of these problems occure kindly do the following )
+As I use my driver, I get some 0 as data, no syntax errors while compiling
+no error on logic, nothing much, if this occurs to you where your data is giving 0 kindly check these line of code.
+
+![DEBUG](https://github.com/IvanAlejo04/lsm6ds3tr-c-stm32-driver/blob/3edf550327fe151103623613eb5489147cd66bf4/carbon%20(8).png?raw=true)
+if your `SDO/SA0 is on GND your adress will be 0x6B if it is on VCC it is 0x6A` Kindly check this on IMU.h
+Also check if you configure the configuration data on IMU.c (did you put a valid data?)
+
+## If you set all of these right, then the last thing you can do is look at your pinOut
+
+- [ ] Did you check your pinOut?
+- [ ] Did you connect your `CS` pin to `VCC` (this driver uses I2C not SPI!!)
+
+# This will probably fix your problem of getting 0
+
+
