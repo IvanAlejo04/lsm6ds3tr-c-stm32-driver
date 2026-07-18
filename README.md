@@ -43,7 +43,9 @@ extern I2C_HandleTypeDef hi2c1;
 
 **b) IMU I2C address** — depends on how your `SDO/SA0` pin is wired:
 
-![IMU I2C address config](https://github.com/IvanAlejo04/lsm6ds3tr-c-stm32-driver/blob/6bff6a783e63ea871fa88e81ac95be8cf9295c43/carbon%20(2).png?raw=true)
+``` C
+#define IMU_Adress_A (0x6B << 1) // (0x6A << 1)
+```
 
 ---
 
@@ -53,7 +55,16 @@ The driver relies on `data_ready_flag` to know when a new I2C DMA read has finis
 
 In your `main.c` (or `stm32xxxx_it.c`), add:
 
-![I2C DMA Rx-complete callback](https://github.com/IvanAlejo04/lsm6ds3tr-c-stm32-driver/blob/6bff6a783e63ea871fa88e81ac95be8cf9295c43/carbon%20(3).png?raw=true)
+```C
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    if (hi2c->Instance == I2C1)
+    {
+    	data_ready_flag = true;
+
+    }
+}
+```
 
 This callback fires automatically once `HAL_I2C_Mem_Read_DMA()` finishes transferring data — which is exactly what `IMU_READ()` calls internally to queue up the next read.
 
@@ -63,7 +74,15 @@ This callback fires automatically once `HAL_I2C_Mem_Read_DMA()` finishes transfe
 
 In `main.c`, before your main loop:
 
-![Struct instantiation and init](https://github.com/IvanAlejo04/lsm6ds3tr-c-stm32-driver/blob/6bff6a783e63ea871fa88e81ac95be8cf9295c43/carbon%20(4).png?raw=true)
+``` C
+IMU_CONFIG_DATA imu_config;
+IMU_DATA        imu_data;
+
+data_ready_flag = false;
+
+IMU_CONF(&imu_config);  // load your register settings (edit these in IMU.c first, see step 5)
+IMU_INIT(&imu_config);  // push the config to the sensor over I2C
+```
 
 ---
 
@@ -71,7 +90,16 @@ In `main.c`, before your main loop:
 
 Before calling `IMU_INIT`, go into `IMU.c` and set up `IMU_CONF()` with your desired ODR (output data rate), full-scale range, filters, etc. Each register is broken into named bit fields so you don't have to hand-write raw binary, for example:
 
-![CTRL1_XL register config example](https://github.com/IvanAlejo04/lsm6ds3tr-c-stm32-driver/blob/6bff6a783e63ea871fa88e81ac95be8cf9295c43/carbon%20(5).png?raw=true)
+``` C
+// CTRL1_XL (0x10) -> | ODR_XL3 | ODR_XL2 | ODR_XL1 | ODR_XL0 | FS_XL1 | FS_XL0 | LPF1_BW_SEL | BW0_XL |
+config->CTRL1_XL.ODR = 0b0000;
+config->CTRL1_XL.FS  = 0b00;
+config->CTRL1_XL.LPF = 0b0;
+config->CTRL1_XL.BW  = 0b0;
+
+// Alternative: write the whole register at once instead of field-by-field
+// config->CTRL1_XL.reg = 0b00000000;
+```
 
 > ⚠️ **Bit-order:** the comments above each register (e.g. `| ODR_XL3 | ODR_XL2 | ... | BW0_XL |`) list bits in **MSB → LSB** order to match the datasheet table. But when writing the **raw `.reg` value** directly (the commented-out `config->CTRL1_XL.reg = 0b...` line), keep in mind that STM32CubeIDE's compiler packs struct bit fields **LSB-first** — the *first* field you declare in the struct is *not* guaranteed to land on the *leftmost* bit of the byte the way the datasheet comment visually suggests. If you always set fields individually by name (as shown above), this doesn't matter — the driver handles the mapping correctly either way. It only bites you if you try to hand-write the raw `0b...` byte yourself and assume it reads left-to-right like the datasheet table.
 
@@ -83,7 +111,9 @@ Do this for all 10 control registers (`CTRL1_XL` through `CTRL10_C`) before movi
 
 In your main `while(1)` loop, just call:
 
-![IMU_READ call in main loop](https://github.com/IvanAlejo04/lsm6ds3tr-c-stm32-driver/blob/6bff6a783e63ea871fa88e81ac95be8cf9295c43/carbon%20(6).png?raw=true)
+``` C
+IMU_READ(&imu_data);
+```
 
 `IMU_READ()` checks `data_ready_flag`, and when it's `true`:
 1. Copies the freshly-DMA'd raw bytes into the signed 16-bit output variables.
@@ -96,7 +126,15 @@ In your main `while(1)` loop, just call:
 
 Read these global variables anywhere in your code once the loop is running:
 
-![Available data variables](https://github.com/IvanAlejo04/lsm6ds3tr-c-stm32-driver/blob/6bff6a783e63ea871fa88e81ac95be8cf9295c43/carbon%20(7).png?raw=true)
+``` C
+IMU_DATA_GYRO_X
+IMU_DATA_GYRO_Y
+IMU_DATA_GYRO_Z
+IMU_DATA_ACCEL_X
+IMU_DATA_ACCEL_Y
+IMU_DATA_ACCEL_Z
+
+```
 
 ---
 
@@ -142,7 +180,15 @@ Read these global variables anywhere in your code once the loop is running:
 As I use my driver, I get some 0 as data, no syntax errors while compiling
 no error on logic, nothing much, if this occurs to you where your data is giving 0 kindly check these line of code.
 
-![DEBUG](https://github.com/IvanAlejo04/lsm6ds3tr-c-stm32-driver/blob/3edf550327fe151103623613eb5489147cd66bf4/carbon%20(8).png?raw=true)
+``` C
+// DECLARE YOUR I2C HANDLE HERE
+extern I2C_HandleTypeDef hi2c1;
+// must define this so that it will change the I2C handle to the one you are using in your project
+#define hi2c &hi2c1
+#define IMU_Adress_A (0x6B << 1) // (0x6A << 1)
+// (0x6B << 1); // adress if your SDA is on GND
+// (0x6A << 1); // adress if your SDA is on VCC
+```
 if your `SDO/SA0 is on GND your adress will be 0x6B if it is on VCC it is 0x6A` Kindly check this on IMU.h
 Also check if you configure the configuration data on IMU.c (did you put a valid data?)
 
