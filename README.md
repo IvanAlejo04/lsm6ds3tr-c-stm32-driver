@@ -45,7 +45,7 @@ Before doing anything else, edit these two things in `IMU.h`:
 
 ## 3. Set up the DMA-complete callback (required!)
 
-The driver relies on `data_ready_flag` to know when a new I2C DMA read has finished and it's safe to parse the buffer. **Nothing in `IMU.c` sets this flag to `true` for you** — you must set it yourself in the I2C DMA Rx-complete callback, or `IMU_READ()` will never fire.
+The driver relies on `data_ready_flag` to know when a new I2C DMA read has finished and it's safe to read the new data. You must set it yourself in the I2C DMA Rx-complete callback, or `IMU_READ()` will never fire.
 
 In your `main.c` (or `stm32xxxx_it.c`), add:
 
