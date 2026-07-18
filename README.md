@@ -35,7 +35,11 @@ Before doing anything else, edit these two things in `IMU.h`:
 
 **a) I2C handle** — point it at whichever I2C peripheral you're using:
 
-![I2C handle config](https://github.com/IvanAlejo04/lsm6ds3tr-c-stm32-driver/blob/6bff6a783e63ea871fa88e81ac95be8cf9295c43/carbon%20(1).png?raw=true)
+``` C
+// DECLARE YOUR I2C HANDLE HERE
+extern I2C_HandleTypeDef hi2c1;
+#define hi2c &hi2c1 // must define this so that it will change the I2C handle to the one you are using in your project
+```
 
 **b) IMU I2C address** — depends on how your `SDO/SA0` pin is wired:
 
