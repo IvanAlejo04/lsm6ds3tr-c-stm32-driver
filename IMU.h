@@ -14,8 +14,8 @@
 
 // DECLARE YOUR I2C HANDLE HERE
 extern I2C_HandleTypeDef hi2c1;
-// must define this so that it will change the I2C handle to the one you are using in your project
-#define hi2c &hi2c1
+#define hi2c &hi2c1 // must define this so that it will change the I2C handle to the one you are using in your project
+
 #define IMU_Adress_A (0x6B << 1) // (0x6A << 1)
 // (0x6B << 1); // adress if your SDA is on GND
 // (0x6A << 1); // adress if your SDA is on VCC
@@ -51,7 +51,7 @@ extern volatile int16_t IMU_DATA_ACCEL_Y; // USE THIS VARIABLE TO READ ACCEL Y D
 extern volatile int16_t IMU_DATA_ACCEL_Z; // USE THIS VARIABLE TO READ ACCEL Z DATA
 // =========================================== //
 
-extern  volatile uint8_t who_am_i_buffer;
+extern volatile uint8_t who_am_i_buffer;
 // MSB ON FIRST!!
 typedef struct
 {
@@ -61,10 +61,10 @@ typedef struct
         uint8_t reg; // Write raw byte here: config.CTRL1_XL.reg = 0b11110000;
         struct
         {
-            uint8_t BW : 1;  // Bit 7 (Leftmost bit of binary literal)
-            uint8_t LPF : 1; // Bit 6
-            uint8_t FS : 2;  // Bits 5-4
             uint8_t ODR : 4; // Bits 3-0 (Rightmost bits of binary literal)
+            uint8_t FS : 2;  // Bits 5-4
+            uint8_t LPF : 1; // Bit 6
+            uint8_t BW : 1;  // Bit 7 (Leftmost bit of binary literal)
         };
     } CTRL1_XL;
 
@@ -74,10 +74,10 @@ typedef struct
         uint8_t reg;
         struct
         {
-            uint8_t unused : 1; // Bit 7
-            uint8_t FS_125 : 1; // Bit 6
-            uint8_t FS : 2;     // Bits 5-4
             uint8_t ODR : 4;    // Bits 3-0
+            uint8_t FS : 2;     // Bits 5-4
+            uint8_t FS_125 : 1; // Bit 6
+            uint8_t unused : 1; // Bit 7
         };
     } CTRL2_G;
 
@@ -87,14 +87,14 @@ typedef struct
         uint8_t reg;
         struct
         {
-            uint8_t SW_RESET : 1;  // Bit 7
-            uint8_t BLE : 1;       // Bit 6
-            uint8_t IF_INC : 1;    // Bit 5
-            uint8_t SIM : 1;       // Bit 4
-            uint8_t PP_OD : 1;     // Bit 3
-            uint8_t H_LACTIVE : 1; // Bit 2
-            uint8_t BDU : 1;       // Bit 1
-            uint8_t BOOT : 1;      // Bit 0
+            uint8_t BOOT : 1;       // Bit 0
+            uint8_t BDU : 1;        // Bit 1
+            uint8_t H_LACTIVE : 1;  // Bit 2
+            uint8_t PP_OD : 1;      // Bit 3
+            uint8_t SIM : 1;        // Bit 4
+            uint8_t IF_INC : 1;     // Bit 5
+            uint8_t BLE : 1;        // Bit 6
+            uint8_t SW_RESET : 1;   // Bit 7
         };
     } CTRL3_C;
 
@@ -104,14 +104,14 @@ typedef struct
         uint8_t reg;
         struct
         {
-            uint8_t RESERVED : 1;      // Bit 7
-            uint8_t LPF1_SEL_G : 1;    // Bit 6
-            uint8_t I2C_DISABLE : 1;   // Bit 5
-            uint8_t DRDY_MASK : 1;     // Bit 4
-            uint8_t DEN_DRDY_INT1 : 1; // Bit 3
-            uint8_t INT2_ON_INT1 : 1;  // Bit 2
-            uint8_t SLEEP : 1;         // Bit 1
             uint8_t DEN_XL_EN : 1;     // Bit 0
+            uint8_t SLEEP : 1;         // Bit 1
+            uint8_t INT2_ON_INT1 : 1;  // Bit 2
+            uint8_t DEN_DRDY_INT1 : 1; // Bit 3
+            uint8_t DRDY_MASK : 1;     // Bit 4
+            uint8_t I2C_DISABLE : 1;   // Bit 5
+            uint8_t LPF1_SEL_G : 1;    // Bit 6
+            uint8_t RESERVED : 1;      // Bit 7
         };
     } CTRL4_C;
 
@@ -121,10 +121,10 @@ typedef struct
         uint8_t reg;
         struct
         {
-            uint8_t ST_XL : 2;    // Bits 7-6
-            uint8_t ST_G : 2;     // Bits 5-4
-            uint8_t DEN_LH : 1;   // Bit 3
             uint8_t ROUNDING : 3; // Bits 2-0
+            uint8_t DEN_LH : 1;   // Bit 3
+            uint8_t ST_G : 2;     // Bits 5-4
+            uint8_t ST_XL : 2;    // Bits 7-6
         };
     } CTRL5_C;
 
@@ -134,13 +134,13 @@ typedef struct
         uint8_t reg;
         struct
         {
-            uint8_t FTYPE : 2;      // Bits 7-6
-            uint8_t RESERVED : 1;   // Bit 5
-            uint8_t USR_OFF_W : 1;  // Bit 4
-            uint8_t XL_HM_MODE : 1; // Bit 3
-            uint8_t LVL2_EN : 1;    // Bit 2
-            uint8_t LVL1_EN : 1;    // Bit 1
             uint8_t TRIG_EN : 1;    // Bit 0
+            uint8_t LVL1_EN : 1;    // Bit 1
+            uint8_t LVL2_EN : 1;    // Bit 2
+            uint8_t XL_HM_MODE : 1; // Bit 3
+            uint8_t USR_OFF_W : 1;  // Bit 4
+            uint8_t RESERVED : 1;   // Bit 5
+            uint8_t FTYPE : 2;      // Bits 7-6
         };
     } CTRL6_C;
 
@@ -150,12 +150,12 @@ typedef struct
         uint8_t reg;
         struct
         {
-            uint8_t RESERVED_1_0 : 2;    // Bits 7-6
-            uint8_t ROUNDING_STATUS : 1; // Bit 5
-            uint8_t RESERVED_3 : 1;      // Bit 4
-            uint8_t HPM_G : 2;           // Bits 3-2
-            uint8_t HP_G_EN : 1;         // Bit 1
             uint8_t G_HM_MODE : 1;       // Bit 0
+            uint8_t HP_G_EN : 1;         // Bit 1
+            uint8_t HPM_G : 2;           // Bits 3-2
+            uint8_t RESERVED_3 : 1;      // Bit 4
+            uint8_t ROUNDING_STATUS : 1; // Bit 5
+            uint8_t RESERVED_1_0 : 2;    // Bits 7-6
         };
     } CTRL7_G;
 
@@ -165,13 +165,13 @@ typedef struct
         uint8_t reg;
         struct
         {
-            uint8_t LOW_PASS_ON_6D : 1;  // Bit 7
-            uint8_t RESERVED : 1;        // Bit 6
-            uint8_t HP_SLOPE_XL_EN : 1;  // Bit 5
-            uint8_t INPUT_COMPOSITE : 1; // Bit 4
-            uint8_t HP_REF_MODE : 1;     // Bit 3
-            uint8_t HPCF_XL : 2;         // Bits 2-1
             uint8_t LPF2_XL_EN : 1;      // Bit 0
+            uint8_t HPCF_XL : 2;         // Bits 2-1
+            uint8_t HP_REF_MODE : 1;     // Bit 3
+            uint8_t INPUT_COMPOSITE : 1; // Bit 4
+            uint8_t HP_SLOPE_XL_EN : 1;  // Bit 5
+            uint8_t RESERVED : 1;        // Bit 6
+            uint8_t LOW_PASS_ON_6D : 1;  // Bit 7
         };
     } CTRL8_XL;
 
@@ -181,13 +181,13 @@ typedef struct
         uint8_t reg;
         struct
         {
-            uint8_t RESERVED_1_0 : 2; // Bits 7-6
-            uint8_t SOFT_EN : 1;      // Bit 5
-            uint8_t RESERVED_3 : 1;   // Bit 4
-            uint8_t DEN_XL_G : 1;     // Bit 3
-            uint8_t DEN_Z : 1;        // Bit 2
-            uint8_t DEN_Y : 1;        // Bit 1
             uint8_t DEN_X : 1;        // Bit 0
+            uint8_t DEN_Y : 1;        // Bit 1
+            uint8_t DEN_Z : 1;        // Bit 2
+            uint8_t DEN_XL_G : 1;     // Bit 3
+            uint8_t RESERVED_3 : 1;   // Bit 4
+            uint8_t SOFT_EN : 1;      // Bit 5
+            uint8_t RESERVED_1_0 : 2; // Bits 7-6
         };
     } CTRL9_XL;
 
@@ -197,14 +197,14 @@ typedef struct
         uint8_t reg;
         struct
         {
-            uint8_t SIGN_MOTION_EN : 1; // Bit 7
-            uint8_t PEDO_RST_STEP : 1;  // Bit 6
-            uint8_t FUNC_EN : 1;        // Bit 5
-            uint8_t TILT_EN : 1;        // Bit 4
-            uint8_t PEDO_EN : 1;        // Bit 3
-            uint8_t TIMER_EN : 1;       // Bit 2
-            uint8_t RESERVED : 1;       // Bit 1
             uint8_t WRIST_TILT_EN : 1;  // Bit 0
+            uint8_t RESERVED : 1;       // Bit 1
+            uint8_t TIMER_EN : 1;       // Bit 2
+            uint8_t PEDO_EN : 1;        // Bit 3
+            uint8_t TILT_EN : 1;        // Bit 4
+            uint8_t FUNC_EN : 1;        // Bit 5
+            uint8_t PEDO_RST_STEP : 1;  // Bit 6
+            uint8_t SIGN_MOTION_EN : 1; // Bit 7
         };
     } CTRL10_C;
 
